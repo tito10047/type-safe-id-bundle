@@ -1,6 +1,6 @@
 # Type-Safe Identifiers with Symfony and Doctrine
 
-
+## Introduction
 When working with Symfony and Doctrine, using UUIDs as entity identifiers is a common approach. Traditionally, IDs are stored as simple integers or as raw Uuid objects.
 However, this can lead to type confusion, especially when working with Symfony Messenger or repository methods. A more robust and type-safe approach is to use dedicated
 ID classes.
