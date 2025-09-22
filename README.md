@@ -52,14 +52,18 @@ class FooRepository extends ServiceEntityRepository
 
 ```php
 $foo = new Foo();
+$poo = new Poo();
 $this->em->persist($foo);
+$this->em->persist($poo);
 $this->em->flush();
 
-$serializedId = $foo->getId()->toString();
+$serializedFooId = serialize($foo->getId());
+$serializedPooId = serialize($poo->getId());
 
-$foo = $this->fooRepository->get(
-    new FooId($serializedId)
-);
+//this work
+$foo = $this->fooRepository->get(unserialize($serializedFooId));
+//this throw Exception App\Repository\FooRepository::get(): Argument #1 ($id) must be of type App\EntityId\FooId, App\EntityId\PooId given
+$foo = $this->fooRepository->get(unserialize($serializedPooId));
 ```
 
 ## Installation
