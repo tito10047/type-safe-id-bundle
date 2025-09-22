@@ -1,0 +1,31 @@
+{
+    "name": "tito10047/type-safe-id-bundle",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "description": "Type safe UUID or Ulid bundle",
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=8.3",
+        "league/construct-finder": "^1.5",
+        "symfony/framework-bundle": "^7.3|^7.0",
+        "symfony/uid": "7.3.*"
+    },
+    "require-dev": {
+      "symfony/maker-bundle": "^1.64"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Tito10047\\TypeSafeIdBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tito10047\\TypeSafeIdBundle\\Tests\\": "tests/"
+        }
+    }
+}
