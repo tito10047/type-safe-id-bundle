@@ -8,7 +8,7 @@ ID classes.
 
 ---
 
-This package override bin/console make:entity and add Type safe identifiers. This is implementation
+This package override ```bin/console make:entity``` and add Type safe identifiers. This is implementation
 of [this article](https://sensiolabs.com/blog/2025/type-safe-identifiers-symfony-doctrine)
 
 Its generates some like this
