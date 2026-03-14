@@ -9,7 +9,7 @@ namespace <?= $namespace ?>;
 
 <?= $use_statements; ?>
 
-final class <?= $class_name ?> extends <?php if (EntityIdTypeEnum::UUID === $id_type || EntityIdTypeEnum::ULID === $id_type): ?>AbstractUidType<?php else: ?>\Tito10047\TypeSafeIdBundle\AbstractIntIdType<?php endif ?>
+final class <?= $class_name ?> extends <?php if (isset($id_type) && (EntityIdTypeEnum::UUID === $id_type || EntityIdTypeEnum::ULID === $id_type)): ?>AbstractUidType<?php else: ?>\Tito10047\TypeSafeIdBundle\AbstractIntIdType<?php endif ?>
 
 {
     public function getName(): string
@@ -17,7 +17,7 @@ final class <?= $class_name ?> extends <?php if (EntityIdTypeEnum::UUID === $id_
         return self::class;
     }
 
-<?php if (EntityIdTypeEnum::UUID === $id_type || EntityIdTypeEnum::ULID === $id_type): ?>
+<?php if (isset($id_type) && (EntityIdTypeEnum::UUID === $id_type || EntityIdTypeEnum::ULID === $id_type)): ?>
     protected function getUidClass(): string
     {
         return <?= $id_class ?>::class;

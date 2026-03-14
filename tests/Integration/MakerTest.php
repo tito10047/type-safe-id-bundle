@@ -3,6 +3,7 @@
 namespace Tito10047\TypeSafeIdBundle\Tests\Integration;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -53,7 +54,7 @@ class MakerTest extends TestCase
             $this->loader->unregister();
         }
         if (file_exists($this->projectDir)) {
-            $this->fs->remove($this->projectDir);
+//            $this->fs->remove($this->projectDir);
         }
 		parent::tearDown();
 
@@ -66,7 +67,7 @@ class MakerTest extends TestCase
 	}
 
 	#[DataProvider('commandProvider')]
-    public function testGenerateEntity(string $className, ?string $argument): void
+	public function testGenerateEntity(string $className, ?string $argument): void
     {
         $kernel = new TestKernel('dev', true, $this->projectDir);
         $kernel->boot();
