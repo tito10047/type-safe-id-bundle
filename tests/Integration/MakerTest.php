@@ -3,7 +3,6 @@
 namespace Tito10047\TypeSafeIdBundle\Tests\Integration;
 
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -14,12 +13,17 @@ use Tito10047\TypeSafeIdBundle\Tests\Fixture\TestKernel;
 class MakerTest extends TestCase
 {
     private Filesystem $fs;
-
     private ?\Composer\Autoload\ClassLoader $loader = null;
-	private string                          $projectDir;
+    private string $projectDir;
+    private mixed $originalErrorHandler = null;
+    private mixed $originalExceptionHandler = null;
 
-	public function setUp(): void
+    public function setUp(): void
     {
+        $this->originalErrorHandler = set_error_handler(static fn() => false);
+        restore_error_handler();
+        $this->originalExceptionHandler = set_exception_handler(static fn() => false);
+        restore_exception_handler();
         $this->projectDir = realpath(sys_get_temp_dir()) . '/type_safe_id_bundle_test_' . uniqid();
         $this->fs = new Filesystem();
         $this->fs->mkdir($this->projectDir . '/src/Entity');
@@ -53,6 +57,19 @@ class MakerTest extends TestCase
         if ($this->loader) {
             $this->loader->unregister();
         }
+
+        while (set_error_handler(static fn() => false) !== $this->originalErrorHandler) {
+            restore_error_handler();
+            restore_error_handler();
+        }
+        restore_error_handler();
+
+        while (set_exception_handler(static fn() => false) !== $this->originalExceptionHandler) {
+            restore_exception_handler();
+            restore_exception_handler();
+        }
+        restore_exception_handler();
+
         if (file_exists($this->projectDir)) {
 //            $this->fs->remove($this->projectDir);
         }
@@ -61,9 +78,9 @@ class MakerTest extends TestCase
     }
 
 	public static function commandProvider():iterable {
-		yield "--with-ulid"=>['Foo1','--with-ulid'];
-		yield "--with-uuid"=>['Foo2','--with-uuid'];
-		yield "no option"=>['Foo3',null];
+		yield "--with-ulid"=>['Foo1','--with-ulid','Uuid'];
+		yield "--with-uuid"=>['Foo2','--with-uuid','Ulid'];
+		yield "no option"=>['Foo3',null,'IntId'];
 	}
 
 	#[DataProvider('commandProvider')]
