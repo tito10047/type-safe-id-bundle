@@ -1,4 +1,9 @@
 <?= "<?php\n"; ?>
+<?php
+
+use Symfony\Bundle\MakerBundle\Maker\Common\EntityIdTypeEnum;
+
+?>
 
 namespace <?= $namespace; ?>;
 
@@ -60,7 +65,11 @@ class <?= $class_name; ?> extends ServiceEntityRepository<?= $with_password_upgr
 <?php endif; ?>
 	public function get(<?= $entity_class_name ?>Id $id): ?<?= $entity_class_name ?>
     {
+<?php if (EntityIdTypeEnum::UUID === $id_type || EntityIdTypeEnum::ULID === $id_type): ?>
 		return $this->find($id->toString());
+<?php else: ?>
+		return $this->find($id->toInt());
+<?php endif; ?>
     }
 
 	public function save(<?= $entity_class_name; ?> $entity, bool $flush = false): void {

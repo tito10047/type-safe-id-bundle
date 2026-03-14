@@ -7,11 +7,14 @@
     "require": {
         "php": ">=8.3",
         "league/construct-finder": "^1.5",
-        "symfony/framework-bundle": "^7.3|^7.0",
-        "symfony/uid": "7.3.*"
+        "symfony/framework-bundle": "^7.4|^8.0",
+        "symfony/uid": "^7.4|^8.0"
     },
     "require-dev": {
-      "symfony/maker-bundle": "^1.64"
+        "doctrine/doctrine-migrations-bundle": "^3.7",
+        "symfony/maker-bundle": "^1.64",
+        "symfony/orm-pack": "^2.7",
+        "symfony/test-pack": "^1.2"
     },
     "config": {
         "sort-packages": true,

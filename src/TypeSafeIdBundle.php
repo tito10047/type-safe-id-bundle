@@ -22,7 +22,6 @@ class TypeSafeIdBundle extends AbstractBundle
     {
         $container->import('../config/services.php');
 
-		$builder->getDefinition(IdEntityGenerator::class);
     }
 
 	public function build(ContainerBuilder $container): void {

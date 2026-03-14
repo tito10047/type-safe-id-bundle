@@ -9,6 +9,6 @@ namespace <?= $namespace ?>;
 
 <?= $use_statements; ?>
 
-final class <?= $class_name ?> extends <?php if (EntityIdTypeEnum::UUID === $id_type): ?>Ulid<?php elseif (EntityIdTypeEnum::ULID === $id_type): ?>Ulid<?php else: ?>int<?php endif ?>
+final class <?= $class_name ?> extends <?php if (EntityIdTypeEnum::UUID === $id_type): ?>Uuid<?php elseif (EntityIdTypeEnum::ULID === $id_type): ?>Ulid<?php else: ?>\Tito10047\TypeSafeIdBundle\IntId<?php endif ?>
 {
 }
