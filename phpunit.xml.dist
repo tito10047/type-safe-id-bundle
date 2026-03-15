@@ -10,7 +10,14 @@
         </testsuite>
     </testsuites>
 
-    <coverage/>
+    <coverage>
+        <report>
+            <clover outputFile="build/reports/clover.xml"/>
+        </report>
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </coverage>
 
     <php>
         <env name="APP_ENV" value="test"/>
