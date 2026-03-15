@@ -5,7 +5,7 @@
     "description": "Type safe UUID or Ulid bundle",
     "minimum-stability": "stable",
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.2",
         "league/construct-finder": "^1.5",
         "symfony/framework-bundle": "^7.4|^8.0",
         "symfony/uid": "^7.4|^8.0"
