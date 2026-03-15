@@ -16,7 +16,10 @@ return static function (ContainerConfigurator $container): void {
 	$services = $container->services();
 
 	if ('dev' === $container->env()) {
-		$services->set(IdEntityGenerator::class)
+		if (!class_exists(\Symfony\Bundle\MakerBundle\Generator::class)) {
+			throw new \RuntimeException('MakerBundle is not installed, try running "composer require symfony/maker-bundle".');
+		}
+		$services->set(IdEntityGenerator::class,IdEntityGenerator::class)
 			->decorate('maker.generator')
 			->args([
 				service('.inner'),

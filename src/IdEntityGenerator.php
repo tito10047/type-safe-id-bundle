@@ -13,6 +13,7 @@ use Symfony\Bundle\MakerBundle\Util\ClassNameDetails;
 use Symfony\Bundle\MakerBundle\Util\UseStatementGenerator;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Uid\Uuid;
+use Tito10047\TypeSafeIdBundle\AbstractIntIdType;
 
 class IdEntityGenerator extends Generator {
 
@@ -20,9 +21,8 @@ class IdEntityGenerator extends Generator {
 	/**
 	 * @noinspection PhpMissingParentConstructorInspection
 	 */
-	private ?string $uidBaseClass;
-	private ?string $uidTypeBaseClass;
-	private ?string  $classNameId = null;
+	private ?string $classNameId = null;
+	private ?EntityIdTypeEnum   $idType = null;
 
 	public function __construct(
 		private readonly Generator $generator,
@@ -40,18 +40,20 @@ class IdEntityGenerator extends Generator {
 	public function generateClass(string $className, string $templateName, array $variables = []): string {
 		/** @var UseStatementGenerator $useGenerator */
 		$useGenerator = $variables['use_statements']??null;
+		$this->idType ??= $variables['id_type'];
 		if ($templateName === 'doctrine/Entity.tpl.php') {
 			$templateName = __DIR__ . '/../templates/extension/maker/Entity.tpl.php';
 
 			$this->classNameId = str_replace('\Entity\\', '\EntityId\\', $className)."Id";
 			$classNameIdType = $this->classNameId."Type";
 			$useStatements = new  UseStatementGenerator([]);
-			if ($variables['id_type'] === EntityIdTypeEnum::UUID) {
+			if (($variables['id_type']??null) === EntityIdTypeEnum::UUID) {
 				$useStatements->addUseStatement(Uuid::class);
-			} elseif ($variables['id_type'] === EntityIdTypeEnum::ULID) {
+			} elseif (($variables['id_type']??null) === EntityIdTypeEnum::ULID) {
 				$useStatements->addUseStatement(Ulid::class);
 			}
 			$idVariables = $variables;
+			$idVariables['id_type'] ??= null;
 			$idVariables["use_statements"] = $useStatements;
 			$this->generator->generateClass(
 				$this->classNameId,
@@ -60,9 +62,14 @@ class IdEntityGenerator extends Generator {
 			);
 
 			$typeVariables = $variables;
+			$typeVariables['id_type'] ??= null;
 			$useStatements = new  UseStatementGenerator([]);
 			$useStatements->addUseStatement($this->classNameId);
-			$useStatements->addUseStatement(AbstractUidType::class);
+			if (($variables['id_type']??null) === EntityIdTypeEnum::UUID || ($variables['id_type']??null) === EntityIdTypeEnum::ULID) {
+				$useStatements->addUseStatement(AbstractUidType::class);
+			} else {
+				$useStatements->addUseStatement(AbstractIntIdType::class);
+			}
 			$typeVariables["use_statements"] = $useStatements;
 			$parts = explode('\\', $this->classNameId);
 			$typeVariables["id_class"] = array_pop($parts);;
@@ -79,6 +86,7 @@ class IdEntityGenerator extends Generator {
 		if ($templateName === 'doctrine/Repository.tpl.php') {
 			$templateName = __DIR__ . '/../templates/extension/maker/Repository.tpl.php';
 			$variables['include_example_comments'] = false;
+			$variables['id_type'] = $this->idType;
 			$useGenerator->addUseStatement(QueryBuilder::class);
 			$useGenerator->addUseStatement($this->classNameId);
 

@@ -56,7 +56,7 @@ class EntityIdTypeRegisterCompilerPass implements CompilerPassInterface {
 
 			$reflection = new \ReflectionClass($className);
 
-			if (! $reflection->isSubclassOf(AbstractUidType::class) ) {
+			if (! $reflection->isSubclassOf(AbstractUidType::class) && !$reflection->isSubclassOf(AbstractIntIdType::class) ) {
 				continue;
 			}
 

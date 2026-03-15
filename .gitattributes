@@ -3,3 +3,7 @@
 .github export-ignore
 docs export-ignore
 tests export-ignore
+
+tests/Integration/ export-ignore
+tests/Fixture/ export-ignore
+phpunit.xml.dist export-ignore
