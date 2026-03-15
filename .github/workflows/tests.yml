@@ -1,7 +1,6 @@
 name: "Tests"
 
 on:
-  pull_request:
   push:
   schedule:
     - cron: '0 16 * * *'
@@ -72,6 +71,10 @@ jobs:
 
       - name: Configure Doctrine Persistence
         run: composer require "doctrine/persistence:${{ matrix.persistence }}" --no-update --no-interaction
+
+      - name: Install symfony/var-exporter for Doctrine Persistence 3.4
+        if: matrix.persistence == '3.4.*'
+        run: composer require "symfony/var-exporter" --no-update --no-interaction
 
       - name: Get Composer Cache Directory
         id: composer-cache
