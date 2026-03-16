@@ -7,24 +7,6 @@ on:
 
 jobs:
   compatibility:
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: false
-          MYSQL_ROOT_PASSWORD: symfony
-          MYSQL_DATABASE: symfony_test
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_PASSWORD: symfony
-          POSTGRES_DB: symfony_test
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
     name: "Tests"
 
     runs-on: ${{ matrix.operating-system }}
@@ -55,12 +37,9 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php-version }}"
-          extensions: pdo_sqlite, pdo_mysql, pdo_pgsql, zlib, bz2, zip, zstd, lz4
+          extensions: pdo_sqlite, zlib, bz2, zip, zstd, lz4
           ini-values: memory_limit=-1
           coverage: pcov
-
-      - name: Stop pre-installed MySQL
-        run: sudo /etc/init.d/mysql stop
 
 
       - name: Configure Symfony
@@ -84,8 +63,6 @@ jobs:
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         env:
-          DATABASE_URL: mysql://root:symfony@127.0.0.1:3306/symfony_test?serverVersion=8.0
-          DATABASE_POSTGRES_URL: postgresql://postgres:symfony@127.0.0.1:5432/symfony_test?serverVersion=15.0
           SYMFONY_PHPUNIT_VERSION: "12"
         run: vendor/bin/phpunit --coverage-clover build/reports/clover.xml
 
