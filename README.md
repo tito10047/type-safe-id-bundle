@@ -31,7 +31,7 @@ class Foo
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: 'doctrine.id_generator.App_EntityId_FooId')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.id_generator.universal')]
     #[ORM\Column(type: FooIdType::class, unique: true)]
     private ?FooId $id = null;
 

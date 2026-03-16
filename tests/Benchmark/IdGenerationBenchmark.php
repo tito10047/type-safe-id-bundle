@@ -361,7 +361,7 @@ class TypeSafeUuidEntity
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: 'doctrine.id_generator.App_EntityId_TypeSafeUuidEntityId')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.id_generator.universal')]
     #[ORM\Column(type: TypeSafeUuidEntityIdType::class)]
     private ?TypeSafeUuidEntityId $id = null;
 
@@ -430,7 +430,7 @@ class TypeSafeUlidEntity
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: 'doctrine.id_generator.App_EntityId_TypeSafeUlidEntityId')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.id_generator.universal')]
     #[ORM\Column(type: TypeSafeUlidEntityIdType::class)]
     private ?TypeSafeUlidEntityId $id = null;
 

@@ -83,21 +83,29 @@ TypeSafeId Bundle has:
 
 ## Technical Implementation Details
 
-### Custom ID Generator without Reflection
+### Universal ID Generator without Reflection
 
 ```php
-final class TypeIdGenerator extends AbstractIdGenerator
+final class UniversalTypeIdGenerator extends AbstractIdGenerator
 {
-    private string $typeClass;
+    /** @var array<class-string, class-string<GeneratableId>> */
+    private array $entityToIdClassMap;
 
-    public function __construct(string $typeClass)
+    public function __construct(array $entityToIdClassMap)
     {
-        $this->typeClass = $typeClass;
+        $this->entityToIdClassMap = $entityToIdClassMap;
     }
 
     public function generateId(EntityManagerInterface $em, $entity): GeneratableId
     {
-        return $this->typeClass::new();
+        $entityClass = $entity::class;
+
+        if (!isset($this->entityToIdClassMap[$entityClass])) {
+            throw new \LogicException("No ID class mapped for entity: $entityClass");
+        }
+
+        $idClass = $this->entityToIdClassMap[$entityClass];
+        return $idClass::new();
     }
 }
 ```
@@ -125,20 +133,39 @@ final class ProductId extends UuidV7 implements GeneratableId
 
 ### DI Container Registration
 
-Compiler pass automatically registers one service per ID:
+Compiler pass builds entity→ID class mapping and registers a single universal service:
 
 ```php
-$generatorServiceId = 'doctrine.id_generator.' . str_replace('\\', '_', $idClass);
-$generatorDefinition = new Definition(TypeIdGenerator::class, [$idClass]);
+// Build mapping: Entity class -> ID class
+$entityToIdClassMap = [];
+foreach ($types as $type) {
+    if ($type['id_class']) {
+        // Convert App\EntityId\ProductId to App\Entity\Product
+        $entityClass = str_replace('\EntityId\\', '\Entity\\', $type['id_class']);
+        $entityClass = preg_replace('/Id$/', '', $entityClass);
+
+        $entityToIdClassMap[$entityClass] = $type['id_class'];
+    }
+}
+
+// Register single universal ID generator service with the mapping
+$generatorDefinition = new Definition(UniversalTypeIdGenerator::class, [$entityToIdClassMap]);
 $generatorDefinition->addTag('doctrine.id_generator');
+$container->setDefinition('doctrine.id_generator.universal', $generatorDefinition);
 ```
 
-Usage in entity:
+Usage in entity (all entities use the same universal service):
 
 ```php
 #[ORM\Id]
 #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-#[ORM\CustomIdGenerator(class: 'doctrine.id_generator.App_Entity_ProductId')]
+#[ORM\CustomIdGenerator(class: 'doctrine.id_generator.universal')]
 #[ORM\Column(type: ProductIdType::class, unique: true)]
 private ?ProductId $id = null;
 ```
+
+**Benefits:**
+- **Single service** instead of N services (cleaner DI container)
+- **No reflection** at runtime (map built at compile time)
+- **O(1) lookup** performance (array key lookup)
+- **Standard Doctrine approach** (using CustomIdGenerator)

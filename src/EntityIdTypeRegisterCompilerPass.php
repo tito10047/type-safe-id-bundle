@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Uid\Uuid;
 use League\ConstructFinder\ConstructFinder;
-use Tito10047\TypeSafeIdBundle\IdGenerator\TypeIdGenerator;
+use Tito10047\TypeSafeIdBundle\IdGenerator\UniversalTypeIdGenerator;
 
 class EntityIdTypeRegisterCompilerPass implements CompilerPassInterface {
 
@@ -30,6 +30,9 @@ class EntityIdTypeRegisterCompilerPass implements CompilerPassInterface {
 
 		$types = $this->generateTypes($container);
 
+		// Build entity -> ID class mapping for universal generator
+		$entityToIdClassMap = [];
+
 		/** @var array{namespace: string, name: string, id_class: string} $type */
 		foreach ($types as $type) {
 			$name      = $type['name'];
@@ -42,14 +45,22 @@ class EntityIdTypeRegisterCompilerPass implements CompilerPassInterface {
 
 			$typeDefinition[$name] = ['class' => $namespace];
 
-			// Register a custom ID generator for this entity ID type
+			// Build mapping: Entity class -> ID class
 			if ($idClass) {
-				$generatorServiceId = 'doctrine.id_generator.' . str_replace('\\', '_', $idClass);
-				$generatorDefinition = new Definition(TypeIdGenerator::class, [$idClass]);
-				$generatorDefinition->setPublic(false);
-				$generatorDefinition->addTag('doctrine.id_generator');
-				$container->setDefinition($generatorServiceId, $generatorDefinition);
+				// Convert App\EntityId\ProductId to App\Entity\Product
+				$entityClass = str_replace('\EntityId\\', '\Entity\\', $idClass);
+				$entityClass = preg_replace('/Id$/', '', $entityClass);
+
+				$entityToIdClassMap[$entityClass] = $idClass;
 			}
+		}
+
+		// Register single universal ID generator service with the mapping
+		if (!empty($entityToIdClassMap)) {
+			$generatorDefinition = new Definition(UniversalTypeIdGenerator::class, [$entityToIdClassMap]);
+			$generatorDefinition->setPublic(false);
+			$generatorDefinition->addTag('doctrine.id_generator');
+			$container->setDefinition('doctrine.id_generator.universal', $generatorDefinition);
 		}
 
 		$container->setParameter(self::CONTAINER_TYPES_PARAMETER, $typeDefinition);
