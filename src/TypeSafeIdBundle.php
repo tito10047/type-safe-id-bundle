@@ -25,10 +25,13 @@ class TypeSafeIdBundle extends AbstractBundle
     }
 
 	public function build(ContainerBuilder $container): void {
+		// Register our compiler pass with high priority to run before DoctrineBundle's IdGeneratorPass
 		$container->addCompilerPass(
 			new EntityIdTypeRegisterCompilerPass(
 				$container->getParameter('kernel.project_dir')
-			)
+			),
+			\Symfony\Component\DependencyInjection\Compiler\PassConfig::TYPE_BEFORE_OPTIMIZATION,
+			100
 		);
 	}
 }

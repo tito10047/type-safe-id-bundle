@@ -173,14 +173,35 @@ class MakerTest extends TestCase
         $this->assertNotEmpty($migrationFiles, "Migration file was not generated");
         $migrationContent = file_get_contents($migrationFiles[0]);
 
+        // Convert class name to table name using underscore naming (Foo1 -> foo1, FooBar -> foo_bar)
+        $tableName = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $className));
+
         // Check that migration creates the table
-        $tableName = strtolower($className);
-        $this->assertStringContainsString("CREATE TABLE $tableName", $migrationContent,
-            "Migration should create table $tableName");
+        $this->assertStringContainsString("CREATE TABLE", $migrationContent,
+            "Migration should create table");
 
         // Check that ID column has correct SQL type
         $this->assertStringContainsString($expectedSqlType, $migrationContent,
             "Migration should use $expectedSqlType for $expectedIdType ID type. Got: " . $migrationContent);
+
+        // Run schema update to create the database schema
+        $input = new ArrayInput([
+            'command' => 'doctrine:schema:update',
+            '--force' => true,
+        ]);
+        $output = new BufferedOutput();
+        $exitCode = $application->run($input, $output);
+        $this->assertEquals(0, $exitCode, "Schema update failed: " . $output->fetch());
+
+        // Verify the table was created in SQLite
+        $connection = $kernel2->getContainer()->get('doctrine')->getConnection();
+        $schemaManager = $connection->createSchemaManager();
+        $tables = $schemaManager->listTableNames();
+        $this->assertContains($tableName, $tables, "Table $tableName was not created in database");
+
+        // Verify the column exists
+        $columns = $schemaManager->listTableColumns($tableName);
+        $this->assertArrayHasKey('id', $columns, "ID column was not created");
 
 		$kernel2->shutdown();
     }

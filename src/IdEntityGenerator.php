@@ -47,6 +47,10 @@ class IdEntityGenerator extends Generator {
 
 			$this->classNameId = str_replace('\Entity\\', '\EntityId\\', $className)."Id";
 			$classNameIdType = $this->classNameId."Type";
+
+			// Generate the service ID for the custom ID generator
+			$generatorServiceId = 'doctrine.id_generator.' . str_replace('\\', '_', $this->classNameId);
+			$variables['id_generator_service'] = $generatorServiceId;
 			$useStatements = new  UseStatementGenerator([]);
 			if (($variables['id_type']??null) === EntityIdTypeEnum::UUID) {
 				$useStatements->addUseStatement(UuidV7::class);
