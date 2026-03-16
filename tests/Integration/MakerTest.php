@@ -135,6 +135,10 @@ class MakerTest extends TestCase
 		$a1 = file_get_contents($this->projectDir . "/src/EntityId/{$className}Id.php");
 		$a2 = file_get_contents($this->projectDir . "/src/EntityId/{$className}IdType.php");
 
+		$namespace = "App\\EntityId\\{$className}Id";
+		$entityId = new $namespace();
+		$this->assertInstanceOf($namespace, $entityId);
+
 		$kernel->shutdown();
 		$this->fs->remove($kernel->getCacheDir());
         // We need a NEW kernel instance after files are generated so CompilerPass can find them

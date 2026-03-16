@@ -13,6 +13,7 @@ use Symfony\Bundle\MakerBundle\Util\ClassNameDetails;
 use Symfony\Bundle\MakerBundle\Util\UseStatementGenerator;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Uid\UuidV7;
 use Tito10047\TypeSafeIdBundle\AbstractIntIdType;
 
 class IdEntityGenerator extends Generator {
@@ -48,7 +49,7 @@ class IdEntityGenerator extends Generator {
 			$classNameIdType = $this->classNameId."Type";
 			$useStatements = new  UseStatementGenerator([]);
 			if (($variables['id_type']??null) === EntityIdTypeEnum::UUID) {
-				$useStatements->addUseStatement(Uuid::class);
+				$useStatements->addUseStatement(UuidV7::class);
 			} elseif (($variables['id_type']??null) === EntityIdTypeEnum::ULID) {
 				$useStatements->addUseStatement(Ulid::class);
 			}
