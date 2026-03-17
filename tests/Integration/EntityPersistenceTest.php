@@ -88,7 +88,7 @@ class EntityPersistenceTest extends TestCase
         $application->setAutoExit(false);
 
         $arguments = [
-            'command' => 'make:entity:typesafe',
+            'command' => 'make:entity:type',
             'name' => $className
         ];
         if ($argument) {

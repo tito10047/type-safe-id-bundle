@@ -18,7 +18,7 @@ class MakeTypeSafeEntityTest extends TestCase
 
     public function testGetCommandName(): void
     {
-        $this->assertSame('make:entity:typesafe', MakeTypeSafeEntity::getCommandName());
+        $this->assertSame('make:entity:type', MakeTypeSafeEntity::getCommandName());
     }
 
     public function testGetCommandDescription(): void
@@ -28,7 +28,7 @@ class MakeTypeSafeEntityTest extends TestCase
 
     public function testConfigureCommand(): void
     {
-        $command = new Command('make:entity:typesafe');
+        $command = new Command('make:entity:type');
         $inputConfig = new InputConfiguration();
 
         $this->maker->configureCommand($command, $inputConfig);

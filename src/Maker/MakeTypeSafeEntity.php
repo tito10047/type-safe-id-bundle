@@ -30,7 +30,7 @@ class MakeTypeSafeEntity extends AbstractMaker
 
     public static function getCommandName(): string
     {
-        return 'make:entity:typesafe';
+        return 'make:entity:type';
     }
 
     public static function getCommandDescription(): string

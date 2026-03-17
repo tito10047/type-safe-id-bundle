@@ -92,10 +92,10 @@ class MakerTest extends TestCase {
 		$application = new Application($kernel);
 		$application->setAutoExit(false);
 
-		$this->assertTrue($application->has('make:entity:typesafe'), 'Command make:entity:typesafe not found');
+		$this->assertTrue($application->has('make:entity:type'), 'Command make:entity:type not found');
 
 		$arguments = [
-			'command' => 'make:entity:typesafe',
+			'command' => 'make:entity:type',
 			'name'    => $className
 		];
 		if ($argument) {

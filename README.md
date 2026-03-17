@@ -18,13 +18,13 @@ ID classes.
 
 ---
 
-This package provides ```bin/console make:entity:typesafe``` to generate entities with Type-safe identifiers. This is implementation
+This package provides ```bin/console make:entity:type``` to generate entities with Type-safe identifiers. This is implementation
 of [this article](https://sensiolabs.com/blog/2025/type-safe-identifiers-symfony-doctrine)
 
 It generates something like this:
 
 ```console
-$ bin/console make:entity:typesafe Foo --with-ulid
+$ bin/console make:entity:type Foo --with-ulid
 ```
 
 ```php
