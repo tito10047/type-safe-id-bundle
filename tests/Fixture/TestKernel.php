@@ -41,10 +41,14 @@ class TestKernel extends Kernel
             'php_errors' => ['log' => true],
         ]);
 
+        $container->extension('maker', [
+            'root_namespace' => 'App',
+        ]);
+
 		$builder->loadFromExtension('type_safe_id', [
-			'entity_path' => 'src/Entity',
-			'type_id_path' => 'src/EntityId',
-			'repository_path' => 'src/Repository',
+			'entity_path' => 'App\Entity',
+			'type_id_path' => 'App\EntityId',
+			'repository_path' => 'App\Repository',
 		]);
 
         $container->extension('doctrine', [

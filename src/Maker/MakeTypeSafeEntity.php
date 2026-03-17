@@ -72,9 +72,23 @@ class MakeTypeSafeEntity extends AbstractMaker
             $idType = EntityIdTypeEnum::UUID;
         }
 
-        $entityNamespace = PathUtil::pathToNamespace($this->entityPath);
-        $typeIdNamespace = PathUtil::pathToNamespace($this->typeIdPath);
-        $repositoryNamespace = PathUtil::pathToNamespace($this->repositoryPath);
+        $rootNamespace = $generator->getRootNamespace();
+		$rootNamespace = trim($rootNamespace, '\\');
+        
+        $entityNamespace = trim($this->entityPath, '\\');
+        if (str_starts_with($entityNamespace, $rootNamespace . '\\')) {
+            $entityNamespace = substr($entityNamespace, strlen($rootNamespace) + 1);
+        }
+
+        $typeIdNamespace = trim($this->typeIdPath, '\\');
+        if (str_starts_with($typeIdNamespace, $rootNamespace . '\\')) {
+            $typeIdNamespace = substr($typeIdNamespace, strlen($rootNamespace) + 1);
+        }
+
+        $repositoryNamespace = trim($this->repositoryPath, '\\');
+        if (str_starts_with($repositoryNamespace, $rootNamespace . '\\')) {
+            $repositoryNamespace = substr($repositoryNamespace, strlen($rootNamespace) + 1);
+        }
 
         $entityClassDetails = $generator->createClassNameDetails($className, $entityNamespace);
         $idClassDetails = $generator->createClassNameDetails($className . 'Id', $typeIdNamespace);

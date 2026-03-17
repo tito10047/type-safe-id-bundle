@@ -14,6 +14,13 @@ class PathUtilTest extends TestCase
         $this->assertSame($expectedNamespace, PathUtil::pathToNamespace($path));
     }
 
+    #[DataProvider('namespaceProvider')]
+    public function testNamespaceToPath(string $namespace, string $expectedSuffix): void
+    {
+        $path = PathUtil::namespaceToPath($namespace);
+        $this->assertStringEndsWith($expectedSuffix, $path);
+    }
+
     public static function pathProvider(): array
     {
         return [
@@ -21,7 +28,16 @@ class PathUtilTest extends TestCase
             ['src/Domain/Entity', 'Domain\Entity'],
             ['Entity', 'Entity'],
             ['src/Entity/', 'Entity'],
-            ['/src/Entity', 'src\Entity'], // Based on current implementation preg_replace('/^src\//', '', $path)
+            ['/src/Entity', 'src\Entity'],
+        ];
+    }
+
+    public static function namespaceProvider(): array
+    {
+        return [
+            ['Tito10047\TypeSafeIdBundle\Entity', 'src/Entity'],
+            ['Tito10047\TypeSafeIdBundle\Domain\Entity', 'src/Domain/Entity'],
+            ['Other\Namespace', 'Other/Namespace'],
         ];
     }
 }

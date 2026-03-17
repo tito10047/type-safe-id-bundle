@@ -32,10 +32,10 @@ class EntityIdTypeRegisterCompilerPass implements CompilerPassInterface {
 		/** @var array<string, array{class: class-string}> $typeDefinition */
 		$typeDefinition = $container->getParameter(self::CONTAINER_TYPES_PARAMETER);
 
-		$entityNamespace = PathUtil::pathToNamespace($container->getParameter('type_safe_id.entity_path'));
-		$typeIdNamespace = PathUtil::pathToNamespace($container->getParameter('type_safe_id.type_id_path'));
+		$entityNamespace = $container->getParameter('type_safe_id.entity_path');
+		$typeIdNamespace = $container->getParameter('type_safe_id.type_id_path');
 
-		$types = $this->generateTypes($container, $container->getParameter('type_safe_id.type_id_path'));
+		$types = $this->generateTypes($container, PathUtil::namespaceToPath($typeIdNamespace));
 
 		// Build entity -> ID class mapping for universal generator
 		$entityToIdClassMap = [];
@@ -76,7 +76,11 @@ class EntityIdTypeRegisterCompilerPass implements CompilerPassInterface {
 	/** @return iterable<int, array{namespace: class-string, name: string, id_class: string}> */
 	private function generateTypes(ContainerBuilder $container, string $typeIdPath): iterable
 	{
-		$searchPath = sprintf('%s/%s', $this->projectDir, $typeIdPath);
+		$searchPath = $typeIdPath;
+		if (!str_starts_with($searchPath, '/') && !str_contains($searchPath, ':')) {
+			$searchPath = sprintf('%s/%s', $this->projectDir, $typeIdPath);
+		}
+
 		if (!is_dir($searchPath)) {
 			return;
 		}

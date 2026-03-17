@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Tito10047\TypeSafeIdBundle\EntityIdTypeRegisterCompilerPass;
 use Tito10047\TypeSafeIdBundle\IdGenerator\UniversalTypeIdGenerator;
+use Tito10047\TypeSafeIdBundle\Util\PathUtil;
 
 class EntityIdTypeRegisterCompilerPassTest extends TestCase
 {
@@ -70,10 +71,17 @@ class ProductId extends IntId {}");
         require_once $this->tempDir . '/' . $typeIdPath . '/ProductIdType.php';
 
         $container = new ContainerBuilder();
-        $container->setParameter('type_safe_id.entity_path', 'src/Entity');
-        $container->setParameter('type_safe_id.type_id_path', $typeIdPath);
+        $container->setParameter('type_safe_id.entity_path', 'Tito10047\TypeSafeIdBundle\Tests\Unit\Fixture');
+        $container->setParameter('type_safe_id.type_id_path', 'Tito10047\TypeSafeIdBundle\Tests\Unit\Fixture');
         $container->setParameter('doctrine.dbal.connection_factory.types', []);
 
+        // Tell PathUtil where to find this namespace
+        $loader = PathUtil::getClassLoader();
+        if ($loader) {
+            $loader->addPsr4('Tito10047\\TypeSafeIdBundle\\Tests\\Unit\\Fixture\\', [$this->tempDir . '/' . $typeIdPath]);
+        }
+        $path = PathUtil::namespaceToPath('Tito10047\TypeSafeIdBundle\Tests\Unit\Fixture');
+        
         $pass->process($container);
 
         $types = $container->getParameter('doctrine.dbal.connection_factory.types');
