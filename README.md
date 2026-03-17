@@ -18,12 +18,14 @@ ID classes.
 
 ---
 
-This package override ```bin/console make:entity``` and add Type safe identifiers. This is implementation
+This package provides ```bin/console make:entity:typesafe``` to generate entities with Type-safe identifiers. This is implementation
 of [this article](https://sensiolabs.com/blog/2025/type-safe-identifiers-symfony-doctrine)
 
-Its generates some like this
+It generates something like this:
 
-```bin/console make:entity Foo --with-ulid```
+```console
+$ bin/console make:entity:typesafe Foo --with-ulid
+```
 
 ```php
 #[ORM\Entity(repositoryClass: FooRepository::class)]

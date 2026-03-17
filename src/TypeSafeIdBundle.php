@@ -22,6 +22,11 @@ class TypeSafeIdBundle extends AbstractBundle
     {
         $container->import('../config/services.php');
 
+		$container->parameters()
+			->set('type_safe_id.entity_path', $config['entity_path'])
+			->set('type_safe_id.type_id_path', $config['type_id_path'])
+			->set('type_safe_id.repository_path', $config['repository_path'])
+		;
     }
 
 	public function build(ContainerBuilder $container): void {

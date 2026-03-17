@@ -94,8 +94,10 @@ class MakerTest extends TestCase
         $application = new Application($kernel);
         $application->setAutoExit(false);
 
+        $this->assertTrue($application->has('make:entity:typesafe'), 'Command make:entity:typesafe not found');
+
 		$arguments   = [
-			'command'     => 'make:entity',
+			'command'     => 'make:entity:typesafe',
 			'name'        => $className
 		];
 		if ($argument) {
@@ -104,28 +106,10 @@ class MakerTest extends TestCase
 		$input = new ArrayInput($arguments);
 		$input->setInteractive(false);
 
-		// CRITICAL WORKAROUND for Symfony MakerBundle bug:
-		// Add console event listener to manually call checkIsUsingUid()
-		// because MakeEntity::interact() returns early when name argument is provided
-		$application->getKernel()->getContainer()->get('event_dispatcher')
-			->addListener(\Symfony\Component\Console\ConsoleEvents::COMMAND, function($event) {
-				$command = $event->getCommand();
-				if ($command->getName() === 'make:entity' && $command instanceof \Symfony\Bundle\MakerBundle\Command\MakerCommand) {
-					$reflection = new \ReflectionClass($command);
-					$makerProperty = $reflection->getProperty('maker');
-					$makerProperty->setAccessible(true);
-					$maker = $makerProperty->getValue($command);
+  $output = new BufferedOutput();
+        $exitCode = $application->run($input, $output);
 
-					// Manually call checkIsUsingUid with the input from event
-					$makerReflection = new \ReflectionClass($maker);
-					$checkMethod = $makerReflection->getMethod('checkIsUsingUid');
-					$checkMethod->setAccessible(true);
-					$checkMethod->invoke($maker, $event->getInput());
-				}
-			});
-
-		$output = new BufferedOutput();
-        $application->run($input, $output);
+        $this->assertEquals(0, $exitCode, "Command failed with exit code " . $exitCode);
 
 		$this->checkClassAndRequire($this->projectDir . "/src/EntityId/{$className}Id.php");
 		$this->checkClassAndRequire($this->projectDir . "/src/EntityId/{$className}IdType.php");
@@ -165,8 +149,9 @@ class MakerTest extends TestCase
         $input->setInteractive(true); // Enable interactive mode with piped input
 
         $output = new BufferedOutput();
-        $application->run($input, $output);
+        $exitCode = $application->run($input, $output);
 
+        $this->assertEquals(0, $exitCode, "Migration command failed with exit code " . $exitCode);
         fclose($inputStream);
 
         $migrationFiles = glob($this->projectDir . '/migrations/Version*.php');
