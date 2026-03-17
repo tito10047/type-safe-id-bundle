@@ -1,7 +1,6 @@
 <?php
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Tito10047\TypeSafeIdBundle\IdEntityGenerator;
 use Tito10047\TypeSafeIdBundle\IdGenerator\TypeIdGenerator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\abstract_arg;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
@@ -25,11 +24,14 @@ return static function (ContainerConfigurator $container): void {
 		if (!class_exists(\Symfony\Bundle\MakerBundle\Generator::class)) {
 			throw new \RuntimeException('MakerBundle is not installed, try running "composer require symfony/maker-bundle".');
 		}
-		$services->set(IdEntityGenerator::class,IdEntityGenerator::class)
-			->decorate('maker.generator')
+
+		$services->set(Tito10047\TypeSafeIdBundle\Maker\MakeTypeSafeEntity::class)
 			->args([
-				service('.inner'),
+				'%type_safe_id.entity_namespace%',
+				'%type_safe_id.type_id_namespace%',
+				'%type_safe_id.repository_namespace%',
 			])
+			->tag('maker.command')
 		;
 	}
 };

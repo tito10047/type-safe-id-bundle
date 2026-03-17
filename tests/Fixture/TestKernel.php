@@ -12,8 +12,6 @@ use Symfony\Bundle\MakerBundle\MakerBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
 
-use Tito10047\TypeSafeIdBundle\EntityIdTypeRegisterCompilerPass;
-
 class TestKernel extends Kernel
 {
     use MicroKernelTrait;
@@ -25,11 +23,6 @@ class TestKernel extends Kernel
         parent::__construct($environment, $debug);
         $this->projectDir = $projectDir;
         $this->cacheHash = md5(serialize([$environment, $debug, $projectDir]));
-    }
-
-    protected function build(ContainerBuilder $container): void
-    {
-        $container->addCompilerPass(new EntityIdTypeRegisterCompilerPass($this->projectDir));
     }
 
     public function registerBundles(): iterable {
@@ -47,6 +40,16 @@ class TestKernel extends Kernel
             'http_method_override' => false,
             'php_errors' => ['log' => true],
         ]);
+
+        $container->extension('maker', [
+            'root_namespace' => 'App',
+        ]);
+
+		$builder->loadFromExtension('type_safe_id', [
+			'entity_namespace' => 'App\Entity',
+			'type_id_namespace' => 'App\EntityId',
+			'repository_namespace' => 'App\Repository',
+		]);
 
         $container->extension('doctrine', [
             'dbal' => [

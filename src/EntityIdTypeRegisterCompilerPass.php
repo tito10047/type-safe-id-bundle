@@ -11,12 +11,11 @@ use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Uid\Uuid;
 use League\ConstructFinder\ConstructFinder;
 use Tito10047\TypeSafeIdBundle\IdGenerator\UniversalTypeIdGenerator;
+use Tito10047\TypeSafeIdBundle\Util\PathUtil;
 
 class EntityIdTypeRegisterCompilerPass implements CompilerPassInterface {
 
 	private const CONTAINER_TYPES_PARAMETER = 'doctrine.dbal.connection_factory.types';
-	private const PROJECT_TYPES_PATTERN     = '/EntityId(\\\\(.*))?/i';
-	private const SRC_FOLDER_MASK           = '%s/src';
 
 	public function __construct(
 		private string $projectDir,
@@ -25,10 +24,18 @@ class EntityIdTypeRegisterCompilerPass implements CompilerPassInterface {
 
 	public function process(ContainerBuilder $container): void
 	{
+		// throw new \Exception('CompilerPass is running');
+		if (!$container->hasParameter('type_safe_id.entity_namespace')) {
+			return;
+		}
+
 		/** @var array<string, array{class: class-string}> $typeDefinition */
 		$typeDefinition = $container->getParameter(self::CONTAINER_TYPES_PARAMETER);
 
-		$types = $this->generateTypes($container);
+		$entityNamespace = $container->getParameter('type_safe_id.entity_namespace');
+		$typeIdNamespace = $container->getParameter('type_safe_id.type_id_namespace');
+
+		$types = $this->generateTypes($container, PathUtil::namespaceToPath($typeIdNamespace));
 
 		// Build entity -> ID class mapping for universal generator
 		$entityToIdClassMap = [];
@@ -47,8 +54,8 @@ class EntityIdTypeRegisterCompilerPass implements CompilerPassInterface {
 
 			// Build mapping: Entity class -> ID class
 			if ($idClass) {
-				// Convert App\EntityId\ProductId to App\Entity\Product
-				$entityClass = str_replace('\EntityId\\', '\Entity\\', $idClass);
+				// Convert App\Domain\ValueObject\ProductId to App\Domain\Entity\Product
+				$entityClass = str_replace($typeIdNamespace, $entityNamespace, $idClass);
 				$entityClass = preg_replace('/Id$/', '', $entityClass);
 
 				$entityToIdClassMap[$entityClass] = $idClass;
@@ -66,18 +73,21 @@ class EntityIdTypeRegisterCompilerPass implements CompilerPassInterface {
 		$container->setParameter(self::CONTAINER_TYPES_PARAMETER, $typeDefinition);
 	}
 
-	/** @return Generator<int, array{namespace: class-string, name: string, id_class: string}> */
-	private function generateTypes(ContainerBuilder $container): iterable
+	/** @return iterable<int, array{namespace: class-string, name: string, id_class: string}> */
+	private function generateTypes(ContainerBuilder $container, string $typeIdPath): iterable
 	{
-		$srcFolder = sprintf(self::SRC_FOLDER_MASK, $this->projectDir);
+		$searchPath = $typeIdPath;
+		if (!str_starts_with($searchPath, '/') && !str_contains($searchPath, ':')) {
+			$searchPath = sprintf('%s/%s', $this->projectDir, $typeIdPath);
+		}
 
-		$classNames = ConstructFinder::locatedIn($srcFolder)->findClassNames();
+		if (!is_dir($searchPath)) {
+			return;
+		}
+
+		$classNames = ConstructFinder::locatedIn($searchPath)->findClassNames();
 
 		foreach ($classNames as $className) {
-			if (preg_match(self::PROJECT_TYPES_PATTERN, $className) === 0) {
-				continue;
-			}
-
 			$reflection = new \ReflectionClass($className);
 
 			if (! $reflection->isSubclassOf(AbstractUidType::class) && !$reflection->isSubclassOf(AbstractIntIdType::class) ) {
@@ -97,4 +107,5 @@ class EntityIdTypeRegisterCompilerPass implements CompilerPassInterface {
 			];
 		}
 	}
+
 }

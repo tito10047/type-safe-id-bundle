@@ -88,7 +88,7 @@ class EntityPersistenceTest extends TestCase
         $application->setAutoExit(false);
 
         $arguments = [
-            'command' => 'make:entity',
+            'command' => 'make:entity:type',
             'name' => $className
         ];
         if ($argument) {
@@ -96,23 +96,6 @@ class EntityPersistenceTest extends TestCase
         }
         $input = new ArrayInput($arguments);
         $input->setInteractive(false);
-
-        // CRITICAL WORKAROUND for Symfony MakerBundle bug
-        $application->getKernel()->getContainer()->get('event_dispatcher')
-            ->addListener(\Symfony\Component\Console\ConsoleEvents::COMMAND, function($event) {
-                $command = $event->getCommand();
-                if ($command->getName() === 'make:entity' && $command instanceof \Symfony\Bundle\MakerBundle\Command\MakerCommand) {
-                    $reflection = new \ReflectionClass($command);
-                    $makerProperty = $reflection->getProperty('maker');
-                    $makerProperty->setAccessible(true);
-                    $maker = $makerProperty->getValue($command);
-
-                    $makerReflection = new \ReflectionClass($maker);
-                    $checkMethod = $makerReflection->getMethod('checkIsUsingUid');
-                    $checkMethod->setAccessible(true);
-                    $checkMethod->invoke($maker, $event->getInput());
-                }
-            });
 
         $output = new BufferedOutput();
         $application->run($input, $output);

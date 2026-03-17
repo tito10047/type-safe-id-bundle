@@ -1,0 +1,1 @@
+Creates a new Doctrine entity class with type-safe ID. This command will generate the base structure (Entity, Id class, Id Type class and Repository) and then you can add fields using the official make:entity command.
