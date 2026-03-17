@@ -11,6 +11,7 @@ use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Uid\Uuid;
 use League\ConstructFinder\ConstructFinder;
 use Tito10047\TypeSafeIdBundle\IdGenerator\UniversalTypeIdGenerator;
+use Tito10047\TypeSafeIdBundle\Util\PathUtil;
 
 class EntityIdTypeRegisterCompilerPass implements CompilerPassInterface {
 
@@ -31,8 +32,8 @@ class EntityIdTypeRegisterCompilerPass implements CompilerPassInterface {
 		/** @var array<string, array{class: class-string}> $typeDefinition */
 		$typeDefinition = $container->getParameter(self::CONTAINER_TYPES_PARAMETER);
 
-		$entityNamespace = $this->pathToNamespace($container->getParameter('type_safe_id.entity_path'));
-		$typeIdNamespace = $this->pathToNamespace($container->getParameter('type_safe_id.type_id_path'));
+		$entityNamespace = PathUtil::pathToNamespace($container->getParameter('type_safe_id.entity_path'));
+		$typeIdNamespace = PathUtil::pathToNamespace($container->getParameter('type_safe_id.type_id_path'));
 
 		$types = $this->generateTypes($container, $container->getParameter('type_safe_id.type_id_path'));
 
@@ -103,10 +104,4 @@ class EntityIdTypeRegisterCompilerPass implements CompilerPassInterface {
 		}
 	}
 
-	private function pathToNamespace(string $path): string
-	{
-		$namespace = preg_replace('/^src\//', '', $path);
-		$namespace = str_replace('/', '\\', $namespace);
-		return trim($namespace, '\\');
-	}
 }

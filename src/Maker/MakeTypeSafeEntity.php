@@ -17,6 +17,7 @@ use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Uid\UuidV7;
 use Symfony\Bridge\Doctrine\Types\AbstractUidType;
 use Tito10047\TypeSafeIdBundle\AbstractIntIdType;
+use Tito10047\TypeSafeIdBundle\Util\PathUtil;
 
 class MakeTypeSafeEntity extends AbstractMaker
 {
@@ -71,9 +72,9 @@ class MakeTypeSafeEntity extends AbstractMaker
             $idType = EntityIdTypeEnum::UUID;
         }
 
-        $entityNamespace = $this->pathToNamespace($this->entityPath);
-        $typeIdNamespace = $this->pathToNamespace($this->typeIdPath);
-        $repositoryNamespace = $this->pathToNamespace($this->repositoryPath);
+        $entityNamespace = PathUtil::pathToNamespace($this->entityPath);
+        $typeIdNamespace = PathUtil::pathToNamespace($this->typeIdPath);
+        $repositoryNamespace = PathUtil::pathToNamespace($this->repositoryPath);
 
         $entityClassDetails = $generator->createClassNameDetails($className, $entityNamespace);
         $idClassDetails = $generator->createClassNameDetails($className . 'Id', $typeIdNamespace);
@@ -172,11 +173,4 @@ class MakeTypeSafeEntity extends AbstractMaker
         ]);
     }
 
-    private function pathToNamespace(string $path): string
-    {
-        // Simple heuristic: assume src/ is at the root and skip it
-        $namespace = preg_replace('/^src\//', '', $path);
-        $namespace = str_replace('/', '\\', $namespace);
-        return trim($namespace, '\\');
-    }
 }
