@@ -37,7 +37,7 @@ class EntityIdTypeRegisterCompilerPassTest extends TestCase
         $container = $this->createMock(ContainerBuilder::class);
         $container->expects($this->once())
             ->method('hasParameter')
-            ->with('type_safe_id.entity_path')
+            ->with('type_safe_id.entity_namespace')
             ->willReturn(false);
 
         $pass = new EntityIdTypeRegisterCompilerPass('/tmp');
@@ -71,8 +71,8 @@ class ProductId extends IntId {}");
         require_once $this->tempDir . '/' . $typeIdPath . '/ProductIdType.php';
 
         $container = new ContainerBuilder();
-        $container->setParameter('type_safe_id.entity_path', 'Tito10047\TypeSafeIdBundle\Tests\Unit\Fixture');
-        $container->setParameter('type_safe_id.type_id_path', 'Tito10047\TypeSafeIdBundle\Tests\Unit\Fixture');
+        $container->setParameter('type_safe_id.entity_namespace', 'Tito10047\TypeSafeIdBundle\Tests\Unit\Fixture');
+        $container->setParameter('type_safe_id.type_id_namespace', 'Tito10047\TypeSafeIdBundle\Tests\Unit\Fixture');
         $container->setParameter('doctrine.dbal.connection_factory.types', []);
 
         // Tell PathUtil where to find this namespace

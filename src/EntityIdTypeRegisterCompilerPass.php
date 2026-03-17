@@ -25,15 +25,15 @@ class EntityIdTypeRegisterCompilerPass implements CompilerPassInterface {
 	public function process(ContainerBuilder $container): void
 	{
 		// throw new \Exception('CompilerPass is running');
-		if (!$container->hasParameter('type_safe_id.entity_path')) {
+		if (!$container->hasParameter('type_safe_id.entity_namespace')) {
 			return;
 		}
 
 		/** @var array<string, array{class: class-string}> $typeDefinition */
 		$typeDefinition = $container->getParameter(self::CONTAINER_TYPES_PARAMETER);
 
-		$entityNamespace = $container->getParameter('type_safe_id.entity_path');
-		$typeIdNamespace = $container->getParameter('type_safe_id.type_id_path');
+		$entityNamespace = $container->getParameter('type_safe_id.entity_namespace');
+		$typeIdNamespace = $container->getParameter('type_safe_id.type_id_namespace');
 
 		$types = $this->generateTypes($container, PathUtil::namespaceToPath($typeIdNamespace));
 

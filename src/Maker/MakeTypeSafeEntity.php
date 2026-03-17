@@ -22,9 +22,9 @@ use Tito10047\TypeSafeIdBundle\Util\PathUtil;
 class MakeTypeSafeEntity extends AbstractMaker
 {
     public function __construct(
-        private readonly string $entityPath,
-        private readonly string $typeIdPath,
-        private readonly string $repositoryPath,
+        private readonly string $entityNamespace,
+        private readonly string $typeIdNamespace,
+        private readonly string $repositoryNamespace,
     ) {
     }
 
@@ -75,17 +75,17 @@ class MakeTypeSafeEntity extends AbstractMaker
         $rootNamespace = $generator->getRootNamespace();
 		$rootNamespace = trim($rootNamespace, '\\');
         
-        $entityNamespace = trim($this->entityPath, '\\');
+        $entityNamespace = trim($this->entityNamespace, '\\');
         if (str_starts_with($entityNamespace, $rootNamespace . '\\')) {
             $entityNamespace = substr($entityNamespace, strlen($rootNamespace) + 1);
         }
 
-        $typeIdNamespace = trim($this->typeIdPath, '\\');
+        $typeIdNamespace = trim($this->typeIdNamespace, '\\');
         if (str_starts_with($typeIdNamespace, $rootNamespace . '\\')) {
             $typeIdNamespace = substr($typeIdNamespace, strlen($rootNamespace) + 1);
         }
 
-        $repositoryNamespace = trim($this->repositoryPath, '\\');
+        $repositoryNamespace = trim($this->repositoryNamespace, '\\');
         if (str_starts_with($repositoryNamespace, $rootNamespace . '\\')) {
             $repositoryNamespace = substr($repositoryNamespace, strlen($rootNamespace) + 1);
         }

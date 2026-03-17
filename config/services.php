@@ -27,9 +27,9 @@ return static function (ContainerConfigurator $container): void {
 
 		$services->set(Tito10047\TypeSafeIdBundle\Maker\MakeTypeSafeEntity::class)
 			->args([
-				'%type_safe_id.entity_path%',
-				'%type_safe_id.type_id_path%',
-				'%type_safe_id.repository_path%',
+				'%type_safe_id.entity_namespace%',
+				'%type_safe_id.type_id_namespace%',
+				'%type_safe_id.repository_namespace%',
 			])
 			->tag('maker.command')
 		;

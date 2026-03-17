@@ -12,9 +12,9 @@ return static function (DefinitionConfigurator $definition): void {
     $definition
         ->rootNode()
             ->children()
-                ->scalarNode('entity_path')->defaultValue('src/Entity')->end()
-                ->scalarNode('type_id_path')->defaultValue('src/EntityId')->end()
-                ->scalarNode('repository_path')->defaultValue('src/Repository')->end()
+                ->scalarNode('entity_namespace')->defaultValue('App\Entity')->end()
+                ->scalarNode('type_id_namespace')->defaultValue('App\EntityId')->end()
+                ->scalarNode('repository_namespace')->defaultValue('App\Repository')->end()
             ->end()
         ->end()
     ;

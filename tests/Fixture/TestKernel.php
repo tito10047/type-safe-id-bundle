@@ -46,9 +46,9 @@ class TestKernel extends Kernel
         ]);
 
 		$builder->loadFromExtension('type_safe_id', [
-			'entity_path' => 'App\Entity',
-			'type_id_path' => 'App\EntityId',
-			'repository_path' => 'App\Repository',
+			'entity_namespace' => 'App\Entity',
+			'type_id_namespace' => 'App\EntityId',
+			'repository_namespace' => 'App\Repository',
 		]);
 
         $container->extension('doctrine', [
